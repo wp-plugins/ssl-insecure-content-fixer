@@ -7,7 +7,7 @@ Donate link: http://shop.webaware.com.au/donations/?donation_for=SSL+Insecure+Co
 Tags: ssl, https, insecure content, partially encrypted, mixed content
 Requires at least: 3.2.1
 Tested up to: 4.3
-Stable tag: 2.0.0
+Stable tag: 2.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -24,6 +24,10 @@ WordPress Multisite gets a network settings page. This can be used to set defaul
 See the [SSL Insecure Content Fixer website](https://ssl.webaware.net.au/) for more details.
 
 = Translations =
+
+Many thanks to the generous efforts of our translators:
+
+* Bulgarian (bg_BG) -- [Ivan Arnaudov](http://templateinspector.com/)
 
 If you'd like to help out by translating this plugin, please [sign up for an account and dig in](https://translate.webaware.com.au/projects/ssl-insecure-content-fixer).
 
@@ -74,7 +78,20 @@ Great! Tell me which plugin is yours and how to check for your new version, and 
 * [Translate into your preferred language](https://translate.webaware.com.au/projects/ssl-insecure-content-fixer)
 * [Fork me on GitHub](https://github.com/webaware/ssl-insecure-content-fixer)
 
+== Upgrade Notice ==
+
+= 2.1.0 =
+
+* security fix: restrict access to AJAX test script; don't disclose server environment with system information
+
 == Changelog ==
+
+= 2.1.0, 2015-07-30 =
+
+* security fix: restrict access to AJAX test script; don't disclose server environment with system information
+* changed: always show server environment on test results
+* added: Bulgarian translation (thanks, [Ivan Arnaudov](http://templateinspector.com/)!)
+* added: .htaccess file for AJAX SSL Tests, fixes conflict with some security plugins
 
 = 2.0.0, 2015-07-26 =
 

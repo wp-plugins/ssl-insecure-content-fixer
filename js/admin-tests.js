@@ -11,6 +11,8 @@ https://ssl.webaware.net.au/
 		data:		{ action: "sslfix-environment" },
 		dataType:	"json",
 		method:		"GET",
+		xhrFields:	{ withCredentials: true },
+		error:		showError,
 		success:	showResults
 	});
 
@@ -42,11 +44,24 @@ https://ssl.webaware.net.au/
 			}
 		}
 		else {
-			$("#sslfix-detect_fail").show().find("pre").text(response.server);
+			$("#sslfix-detect_fail").show();
 		}
 
 		$("#sslfix-test-result-head").show();
 		$("#sslfix-loading").hide();
+		$("#sslfix-environment").show().find("pre").text(response.env);
+	}
+
+	/**
+	* show test error
+	* @param {Object} xhr
+	* @param {String} status
+	* @param {String} errmsg
+	*/
+	function showError(xhr, status, errmsg) {
+		$("#sslfix-test-result-head").show();
+		$("#sslfix-loading").hide();
+		$("#sslfix-environment").show().find("pre").text(status + "\n" + errmsg);
 	}
 
 })(jQuery);
