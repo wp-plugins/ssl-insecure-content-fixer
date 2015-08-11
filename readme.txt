@@ -7,7 +7,7 @@ Donate link: http://shop.webaware.com.au/donations/?donation_for=SSL+Insecure+Co
 Tags: ssl, https, insecure content, partially encrypted, mixed content
 Requires at least: 3.2.1
 Tested up to: 4.3
-Stable tag: 2.1.0
+Stable tag: 2.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -85,6 +85,11 @@ Great! Tell me which plugin is yours and how to check for your new version, and 
 * security fix: restrict access to AJAX test script; don't disclose server environment with system information
 
 == Changelog ==
+
+= 2.1.1, 2015-08-11 =
+
+* fixed: HTTPS detection doesn't work unless SSL Tests page was just visited
+* added: show update notice on plugin admin page
 
 = 2.1.0, 2015-07-30 =
 

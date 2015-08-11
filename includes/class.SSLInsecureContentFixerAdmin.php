@@ -12,7 +12,8 @@ class SSLInsecureContentFixerAdmin {
 	*/
 	public function __construct() {
 		add_action('admin_init', array($this, 'adminInit'));
-		add_action('load-tools_page_ssl-insecure-content-fixer-tests', array($this, 'loadSslTests'));
+		add_action('load-tools_page_ssl-insecure-content-fixer-tests', array($this, 'setNonceCookie'));
+		add_action('load-settings_page_ssl-insecure-content-fixer', array($this, 'setNonceCookie'));
 		add_action('admin_print_styles-settings_page_ssl-insecure-content-fixer', array($this, 'printStylesSettings'));
 		add_action('admin_menu', array($this, 'adminMenu'));
 		add_action('network_admin_menu', array($this, 'adminMenuNetwork'));
@@ -26,6 +27,11 @@ class SSLInsecureContentFixerAdmin {
 	public function adminInit() {
 		add_settings_section(SSLFIX_PLUGIN_OPTIONS, false, false, SSLFIX_PLUGIN_OPTIONS);
 		register_setting(SSLFIX_PLUGIN_OPTIONS, SSLFIX_PLUGIN_OPTIONS, array($this, 'settingsValidate'));
+
+		// in_plugin_update_message isn't supported on multisite != blog-1, so just add another row
+		if (current_user_can('update_plugins')) {
+			add_action('after_plugin_row_' . SSLFIX_PLUGIN_NAME, array($this, 'upgradeMessage'), 20, 2);
+		}
 	}
 
 	/**
@@ -98,6 +104,27 @@ class SSLInsecureContentFixerAdmin {
 		}
 
 		return $links;
+	}
+
+	/**
+	* show upgrade messages on Plugins admin page
+	* @param string $file
+	* @param object $current_meta
+	*/
+	public function upgradeMessage($file, $plugin_data) {
+		$current = get_site_transient('update_plugins');
+
+		if (isset($current->response[$file])) {
+			$r = $current->response[$file];
+
+			if (!empty($r->upgrade_notice)) {
+				$wp_list_table = _get_list_table('WP_Plugins_List_Table');
+				$colspan = $wp_list_table->get_column_count();
+				$plugin_name = wp_kses($plugin_data['Name'], 'strip');
+
+				require SSLFIX_PLUGIN_ROOT . 'views/admin-upgrade-message.php';
+			}
+		}
 	}
 
 	/**
@@ -177,20 +204,13 @@ class SSLInsecureContentFixerAdmin {
 	/**
 	* set a cookie functioning like a nonce for the non-WP AJAX script
 	*/
-	public function loadSslTests() {
-		$plugin_path = plugin_dir_path(SSLFIX_PLUGIN_FILE);
-		$cookie_path = '/';
+	public function setNonceCookie() {
+		require SSLFIX_PLUGIN_ROOT . 'includes/nonces.php';
 
-		// some system data to salt with
-		$data = sprintf("%s\n%s\n%s\n%s", php_uname(), php_ini_loaded_file(), php_ini_scanned_files(), implode("\n", get_loaded_extensions()));
+		$cookie_name  = ssl_insecure_content_fix_nonce_name(SSLFIX_PLUGIN_ROOT);
+		$cookie_value = ssl_insecure_content_fix_nonce_value();
 
-		// synthesise a temporary cookie using server name, file path, time, and system data
-		// NB: only needs to be as complex/secure as the data that could be exposed, i.e. the contents of $_SERVER and script paths
-		$tick = ceil(time() / 120);
-		$cookie_name = 'sslfix_' . md5(sprintf('%s|%s|%s', $_SERVER['SERVER_NAME'], $plugin_path, $tick));
-		$cookie_value = md5($data);
-
-		setcookie($cookie_name, $cookie_value, time() + 30, $cookie_path);
+		setcookie($cookie_name, $cookie_value, time() + 30, '/');
 	}
 
 	/**

@@ -1,27 +1,23 @@
 <?php
 
+// compute the path to the plugin's root folder
+$sslfix_plugin_root = dirname(dirname(__FILE__)) . '/';
+
+require $sslfix_plugin_root . 'includes/nonces.php';
+
 /**
 * test for cookie, must have expected name and value
 */
-$plugin_path = dirname(dirname(__FILE__)) . '/';
 
-// some system data to salt with
-$data = sprintf("%s\n%s\n%s\n%s", php_uname(), php_ini_loaded_file(), php_ini_scanned_files(), implode("\n", get_loaded_extensions()));
-
-// synthesise a temporary cookie name using server name, file path, and time
-// NB: only needs to be as complex/secure as the data that could be exposed, i.e. the contents of $_SERVER and script paths
-$tick = ceil(time() / 120);
-$cookie_name = 'sslfix_' . md5(sprintf('%s|%s|%s', $_SERVER['SERVER_NAME'], $plugin_path, $tick));
-$cookie_value = md5($data);
+$cookie_name  = ssl_insecure_content_fix_nonce_name($sslfix_plugin_root);
+$cookie_value = ssl_insecure_content_fix_nonce_value();
 
 if (!isset($_COOKIE[$cookie_name])) {
-	echo 'missing nonce.';
-	exit(403);
+	sslfix_send_error('missing nonce.');
 }
 
 if ($_COOKIE[$cookie_name] !== $cookie_value) {
-	echo 'bad nonce value.';
-	exit(403);
+	sslfix_send_error('bad nonce value.');
 }
 
 /**
@@ -40,9 +36,13 @@ if (isset($_GET['action'])) {
 			break;
 
 		default:
-			exit(404);
+			sslfix_send_error('invalid action');
+			break;
 
 	}
+}
+else {
+	sslfix_send_error('no action given');
 }
 
 /**
@@ -120,6 +120,8 @@ function sslfix_environment() {
 		'PHP_AUTH_PW',
 		'PHP_AUTH_USER',
 		'PHP_SELF',
+		'PP_CUSTOM_PHP_INI',
+		'PP_CUSTOM_PHP_CGI_INDEX',
 		'QUERY_STRING',
 		'REDIRECT_REMOTE_USER',
 		'REDIRECT_STATUS',
@@ -132,6 +134,8 @@ function sslfix_environment() {
 		'REQUEST_URI',
 		'SCRIPT_FILENAME',
 		'SCRIPT_NAME',
+		'SCRIPT_URI',
+		'SCRIPT_URL',
 		'SERVER_ADDR',
 		'SERVER_ADMIN',
 		'SERVER_NAME',
@@ -197,12 +201,29 @@ function sslfix_send_json($response) {
 	@header('Cache-Control: no-cache, must-revalidate, max-age=0');
 	@header('Pragma: no-cache');
 
-	// add CORS headers so that browsers permit JSON response
+	// add CORS headers so that browsers permit response
 	@header('Access-Control-Allow-Credentials: true');
 	if (isset($_SERVER['HTTP_ORIGIN'])) {
 		@header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
 	}
 
 	echo json_encode($response);
+	exit;
+}
+
+/**
+* terminate with error
+* @param string $msg
+*/
+function sslfix_send_error($msg) {
+	@header('HTTP/1.0 403 Forbidden');
+
+	// add CORS headers so that browsers permit response
+	@header('Access-Control-Allow-Credentials: true');
+	if (isset($_SERVER['HTTP_ORIGIN'])) {
+		@header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
+	}
+
+	echo $msg;
 	exit;
 }
