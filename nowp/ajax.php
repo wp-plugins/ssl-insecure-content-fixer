@@ -98,6 +98,7 @@ function sslfix_environment() {
 		'CONTEXT_DOCUMENT_ROOT',
 		'CONTEXT_PREFIX',
 		'DOCUMENT_ROOT',
+		'DOCUMENT_ROOT_REAL',
 		'DOCUMENT_URI',
 		'FCGI_ROLE',
 		'GATEWAY_INTERFACE',
@@ -122,6 +123,7 @@ function sslfix_environment() {
 		'PHP_SELF',
 		'PP_CUSTOM_PHP_INI',
 		'PP_CUSTOM_PHP_CGI_INDEX',
+		'PWD',
 		'QUERY_STRING',
 		'REDIRECT_REMOTE_USER',
 		'REDIRECT_STATUS',
@@ -175,7 +177,7 @@ function sslfix_get_environment() {
 		$env['detect'] = 'HTTP_X_FORWARDED_PROTO';
 		$env['ssl'] = true;
 	}
-	elseif (isset($_SERVER['HTTP_X_FORWARDED_SSL']) && $_SERVER['HTTP_X_FORWARDED_SSL'] === 'on') {
+	elseif (isset($_SERVER['HTTP_X_FORWARDED_SSL']) && ($_SERVER['HTTP_X_FORWARDED_SSL'] === 'on' || $_SERVER['HTTP_X_FORWARDED_SSL'] === '1')) {
 		$env['detect'] = 'HTTP_X_FORWARDED_SSL';
 		$env['ssl'] = true;
 	}
