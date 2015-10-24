@@ -7,7 +7,7 @@ Donate link: http://shop.webaware.com.au/donations/?donation_for=SSL+Insecure+Co
 Tags: ssl, https, insecure content, partially encrypted, mixed content
 Requires at least: 3.2.1
 Tested up to: 4.3.1
-Stable tag: 2.1.3
+Stable tag: 2.1.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -29,8 +29,9 @@ Many thanks to the generous efforts of our translators:
 
 * Bulgarian (bg_BG) -- [Ivan Arnaudov](http://templateinspector.com/)
 * Chinese simplified (zh_CN) -- [漠伦](https://molun.net/)
+* French (fr-FR) -- Houzepha Taheraly
 
-If you'd like to help out by translating this plugin, please [sign up for an account and dig in](https://translate.webaware.com.au/projects/ssl-insecure-content-fixer).
+If you'd like to help out by translating this plugin, please [sign up for an account and dig in](https://translate.wordpress.org/projects/wp-plugins/ssl-insecure-content-fixer).
 
 == Installation ==
 
@@ -66,6 +67,12 @@ If your website is behind a load balancer or other reverse proxy, and WordPress 
 
 You are probably behind a reverse proxy -- see the FAQ above about load balancers / reverse proxies, and run the SSL Tests from the WordPress admin Tools menu.
 
+= I changed the HTTPS Detection settings and now I can't login =
+
+You probably have a conflict with another plugin that is also trying to fix HTTPS detection. Add this line to your wp-config.php file, above the lines about `ABSPATH`. You can then change this plugin back to default settings before proceeding.
+
+`define('SSLFIX_PLUGIN_NO_HTTPS_DETECT', true);`
+
 = I still get "insecure content" warnings on my secure page =
 
 Post about it to [the support forum](https://wordpress.org/support/plugin/ssl-insecure-content-fixer), and be sure to include a link to the page. Posts without working links will probably be ignored.
@@ -76,18 +83,25 @@ Great! Tell me which plugin is yours and how to check for your new version, and 
 
 == Contributions ==
 
-* [Translate into your preferred language](https://translate.webaware.com.au/projects/ssl-insecure-content-fixer)
+* [Translate into your preferred language](https://translate.wordpress.org/projects/wp-plugins/ssl-insecure-content-fixer)
 * [Fork me on GitHub](https://github.com/webaware/ssl-insecure-content-fixer)
 
 == Upgrade Notice ==
 
-= 2.1.3 =
+= 2.1.4 =
 
-added: Chinese (simplified) translation
+fix inline CSS background image rules, e.g. in Capture level; French translation; support `SSLFIX_PLUGIN_NO_HTTPS_DETECT`
 
 == Changelog ==
 
 The full changelog can be found [on GitHub](https://github.com/webaware/ssl-insecure-content-fixer/blob/master/changelog.md). Recent entries:
+
+### 2.1.4, 2015-10-24
+
+* added: French translation (thanks, Houzepha Taheraly!)
+* added: can define `SSLFIX_PLUGIN_NO_HTTPS_DETECT` in wp-config.php to prevent the proxy fix, e.g. to overcome plugin conflicts
+* added: fix inline CSS background image rules, e.g. in Capture level
+* added: indicate whether WordPress HTTPS detection is successful with tick/cross
 
 ### 2.1.3, 2015-10-05
 
@@ -104,16 +118,7 @@ The full changelog can be found [on GitHub](https://github.com/webaware/ssl-inse
 
 ### 2.1.0, 2015-07-30
 
-* security fix: restrict access to AJAX test script; don't disclose server environment with system information
+* **SECURITY FIX**: restrict access to AJAX test script; don't disclose server environment with system information
 * changed: always show server environment on test results
 * added: Bulgarian translation (thanks, [Ivan Arnaudov](http://templateinspector.com/)!)
 * added: .htaccess file for AJAX SSL Tests, fixes conflict with some security plugins
-
-### 2.0.0, 2015-07-26
-
-* changed: handle media loaded by calling `wp_get_attachment_image()`, `wp_get_attachment_image_src()`, etc. via AJAX
-* changed: in multisite, test tools (and settings) are only available to super admins
-* added: settings page for controlling behaviour
-* added: Simple, Content, Widgets, Capture, and Off modes for fixes
-* added: fix for [WooCommerce + Google Chrome HTTP_HTTPS bug](https://github.com/woothemes/woocommerce/issues/8479) (fixed in WooCommerce v2.3.13)
-* added: load translation (if anyone fancies [supplying some](https://translate.webaware.com.au/projects/ssl-insecure-content-fixer)!)
